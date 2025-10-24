@@ -1,0 +1,27 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+*.egg
+*.egg-info/
+.eggs/
+
+# Distribution / build artifacts
+build/
+dist/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+.env/
+.env
+
+# Project settings
+*.log
+*.sqlite3
+
+# Test and notebook caches
+.pytest_cache/
+.ipynb_checkpoints/
