@@ -11,6 +11,7 @@ __pycache__/
 build/
 dist/
 *.whl
+pip-wheel-metadata/
 
 # Virtual environments
 .venv/
@@ -22,6 +23,17 @@ venv/
 *.log
 *.sqlite3
 
+# Type checkers and coverage reports
+.mypy_cache/
+coverage.xml
+.coverage
+htmlcov/
+
 # Test and notebook caches
 .pytest_cache/
 .ipynb_checkpoints/
+
+# IDE and OS-specific files
+.idea/
+.vscode/
+.DS_Store

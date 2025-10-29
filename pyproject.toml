@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lunar-rover"
+version = "0.1.0"
+description = "Toolkit for lunar rover perception, terrain analysis, and autonomy prototyping."
+authors = [
+    { name = "Lunar Rover Team" }
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "networkx>=3.2",
+    "numpy>=1.26",
+    "opencv-python>=4.8",
+    "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=24.3",
+    "flake8>=6.1",
+    "isort>=5.13",
+    "mypy>=1.6",
+    "pytest>=7.4",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lunar_rover*"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]

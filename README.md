@@ -1,61 +1,98 @@
-# Multi_Cam_Public
+# Lunar Rover Autonomy Toolkit
 
-This repository contains modular utilities that support camera-based person
-tracking and re-identification workflows. The helpers are designed to slot into
-an inference loop, handling the most common data-preparation and visualization
-steps that occur between model invocations.
+This repository hosts the scaffolding for a Python-based experimentation
+environment focused on lunar rover autonomy. The project is organised into
+modular subsystems that cover perception, terrain understanding, pathfinding,
+and benchmarking so new algorithms can be added predictably as the platform
+matures.
 
-## Helper utilities
+## Repository Layout
 
-The module [`utils/helpers.py`](utils/helpers.py) exports reusable functions
-that can be imported by detection, embedding, or tracking scripts:
-
-- `crop_person(frame, bbox)`: Clips a bounding box to frame bounds and returns a
-  correctly typed crop for model ingestion.
-- `compute_cosine_similarity(vec1, vec2)`: Produces a numerically stable cosine
-  similarity score between two embeddings.
-- `draw_annotations(frame, bbox, gid, color, info=None)`: Renders a bounding box
-  and descriptive label onto a frame using OpenCV primitives.
-- `track_feature(track_history)`: Aggregates recent embeddings, applying mean
-  pooling and L2 normalisation for downstream matching.
-- `color_for_id(...)` / `get_default_palette()`: Supplies deterministic colours
-  for track identifiers to ensure consistent visualisations.
-
-### Example integration
-
-```python
-import cv2
-import numpy as np
-
-from utils.helpers import (
-    color_for_id,
-    compute_cosine_similarity,
-    crop_person,
-    draw_annotations,
-    track_feature,
-)
-
-# Simulated model outputs
-frame = np.zeros((720, 1280, 3), dtype=np.uint8)
-bbox = (100.5, 200.0, 260.2, 540.7)
-embeddings = [np.random.rand(512).astype("float32") for _ in range(5)]
-
-crop = crop_person(frame, bbox)
-feature = track_feature(embeddings)
-similarity = compute_cosine_similarity(feature, feature)
-color = color_for_id(42)
-annotated = draw_annotations(
-    frame,
-    bbox,
-    gid=42,
-    color=color,
-    info={"cos": similarity},
-)
-
-cv2.imshow("Annotated", annotated)
-cv2.waitKey(1)
+```
+lunar_rover/
+├── vision/         # Sensor ingestion and perception pipelines
+├── terrain/        # Heightmap parsing and terrain feature extraction
+├── pathfinding/    # Route planning algorithms and utilities
+├── benchmarking/   # Scenario runners and performance tracking helpers
+└── utils/          # Cross-cutting helpers such as configuration loaders
 ```
 
-> **Note:** `draw_annotations` requires the optional `opencv-python` package.
-When PyTorch tensors are provided for frames or embeddings, the helpers preserve
-PyTorch output types and devices for seamless integration with GPU pipelines.
+Additional folders:
+
+- `tests/` contains pytest suites that exercise the scaffolding and provide
+  working examples for new contributors.
+- `Makefile` defines developer tasks for installing dependencies, running the
+  linters, and executing the test suite.
+
+## Getting Started
+
+### Requirements
+
+- Python 3.11 or newer
+- A C++ toolchain for compiling native wheels (required by `opencv-python`)
+
+### Environment setup
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+pip install -e ".[dev]"
+```
+
+The last command installs the package in editable mode alongside the optional
+`dev` dependencies declared in `pyproject.toml` (black, flake8, isort, pytest,
+etc.).
+
+Alternatively, the same steps can be executed via the provided make targets:
+
+```bash
+make install
+make lint
+make test
+```
+
+## Development Workflow
+
+- **Vision (`lunar_rover.vision`)** hosts reusable pipelines that chain
+  pre-processing, inference, and post-processing stages for on-board cameras.
+- **Terrain (`lunar_rover.terrain`)** provides helpers for parsing height maps
+  and computing slope or traversability metrics.
+- **Pathfinding (`lunar_rover.pathfinding`)** implements grid-based planners and
+  defines the base interfaces future planners should adopt.
+- **Benchmarking (`lunar_rover.benchmarking`)** supplies light-weight scenario
+  orchestration to compare competing algorithms.
+- **Utils (`lunar_rover.utils`)** centralises configuration loading and other
+  shared helpers.
+
+## Linting & Formatting
+
+The project ships with configuration for:
+
+- **black** for code formatting
+- **isort** for import ordering
+- **flake8** for lightweight static analysis
+
+Run them together using `make check`, or individually through their respective
+make targets.
+
+## Testing
+
+Pytest is the default test runner. To execute all tests:
+
+```bash
+make test
+```
+
+Test discovery is configured in `pyproject.toml` to target the `tests/`
+directory.
+
+## Next Steps
+
+This skeleton is intentionally lightweight. Suggested roadmap items include:
+
+1. Integrate real sensor simulation datasets and expand the terrain loaders.
+2. Add probabilistic planners (e.g., RRT*, D* Lite) and benchmarking harnesses.
+3. Provide dataset download scripts and continuous integration workflows.
+4. Expand utilities for logging, configuration validation, and telemetry.

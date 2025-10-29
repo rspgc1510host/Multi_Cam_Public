@@ -1,0 +1,11 @@
+# Core scientific stack
+numpy>=1.26
+scipy>=1.11
+opencv-python>=4.8
+
+# Pathfinding and benchmarking extensions
+networkx>=3.2
+
+# Placeholders for advanced perception and simulation modules
+# torch
+# open3d
